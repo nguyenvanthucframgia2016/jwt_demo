@@ -16,3 +16,14 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::post('login', 'Api\TokenController@generate');
+
+Route::group(['middleware' => ['jwt.verify']], function() {
+	// change default model in JWT
+	config([
+		'auth.providers.users.model' => \App\Models\UserToken::class
+	]);
+
+    Route::get('user', 'Api\UserController@getAuthenticatedUser');
+});
